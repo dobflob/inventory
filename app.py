@@ -149,11 +149,9 @@ def main():
         elif choice.lower() == 'a':
             product = new_product()
             add_product(product)
-            print(f'\n{product['product_name'].title()} added successfully.')
             sleep(1)
         elif choice.lower() == 'b':
             backup_to_csv()
-            print(f'\nBackup complete.')
             sleep(1)
         else:
             break
