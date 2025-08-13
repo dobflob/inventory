@@ -27,6 +27,16 @@ def clean_date(updated_date):
         msg = f'Invalid date format. Try again.'
         # add function call to print error message
 
+
+def format_price(price):
+    float_price = (price / 100)
+    return f'{float_price:.2f}'
+
+
+def format_date(updated_date):
+    return updated_date.strftime('%m/%d/%Y')
+
+
 def import_csv():
     with open('inventory.csv') as csvfile:
         data = csv.DictReader(csvfile)
@@ -35,6 +45,20 @@ def import_csv():
             record['product_quantity'] = clean_quantity(record['product_quantity'])
             record['date_updated'] = clean_date(record['date_updated'])
             add_product(record)
+
+
+def backup_to_csv():
+    headers = ['product_name', 'product_price', 'product_quantity', 'date_updated']
+    products = session.query(Product).all()
+    with open('backup.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(headers)
+        for product in products:
+            name = product.product_name
+            quantity = product.product_quantity
+            price = format_price(product.product_price)
+            updated = format_date(product.date_updated)
+            writer.writerow([name, quantity, price, updated])
 
 
 def add_product(product):
@@ -52,8 +76,85 @@ def add_product(product):
     session.commit()
 
 
+def get_product_by_id():
+    while True:
+        id = input('>> Product Id:  ')
+        product = session.query(Product).filter(Product.product_id==id).first()
+        if product:
+            return product
+        else:
+            msg = 'Product not found. Try again.'
+            # add function call to print error message
+
+
+def new_product():
+    new_product = {}
+    name_error = True
+    while name_error:
+        name = input('>> Product Name:  ').title()
+        if len(name) > 2:
+            new_product['product_name'] = name
+            name_error = False
+        else:
+            msg = 'Name must be at least 3 characters.'
+            # add function call to print error message
+
+    qty_error = True
+    while qty_error:
+        quantity = clean_quantity(input('>> Quantity:  '))
+        if quantity:
+            new_product['product_quantity'] = quantity
+            qty_error = False
+
+    price_error = True
+    while price_error:
+        price = clean_price('$' + input('>> Price (e.g. 3.99):  $'))
+        if price:
+            new_product['product_price'] = price
+            price_error = False
+
+    updated_error = True
+    while updated_error:
+        updated = clean_date(input(f'>> Date Updated (e.g. 4/10/2025):  '))
+        if updated:
+            new_product['date_updated'] = updated
+            updated_error = False
+    
+    return new_product
+
+
+def menu():
+    print('''
+    Main Menu
+-----------------
+v - View Product
+a - Add Product
+b - Backup Data
+''')
+    return input('>> What do you want to do? (Enter to quit)  ')
+
+
 def main():
     import_csv()
+    while True:
+        choice = menu()
+        if choice not in ('vab'):
+            msg = 'Invalid selection. Try again'
+            # add function call to print error message
+        elif choice.lower() == 'v':
+            product = get_product_by_id()
+            print(product)
+            sleep(1)
+        elif choice.lower() == 'a':
+            product = new_product()
+            print(product)
+            add_product(product)
+            print(f'{product['product_ename'].title()} added successfully.')
+        elif choice.lower() == 'b':
+            backup_to_csv()
+        else:
+            break
+        
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

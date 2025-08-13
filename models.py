@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
+from datetime import datetime
 
 engine = create_engine('sqlite:///inventory.db', echo=False)
 Session = sessionmaker(bind=engine)
@@ -17,10 +18,11 @@ class Product(Base):
 
     def __repr__(self):
         return f'''
+Id: {self.product_id}
 Name: {self.product_name}
 Quantity: {self.product_quantity}
-Price: ${self.product_price / 100}
-Updated: {self.date_updated}      
+Price: ${(self.product_price / 100):.2f}
+Updated: {datetime.strftime(self.date_updated, '%m/%d/%Y')}      
 '''
 
 
