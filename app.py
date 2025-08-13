@@ -149,7 +149,7 @@ def main():
         elif choice.lower() == 'a':
             product = new_product()
             add_product(product)
-            print(f'{product['product_name'].title()} added successfully.')
+            print(f'\n{product['product_name'].title()} added successfully.')
         elif choice.lower() == 'b':
             backup_to_csv()
         else:
