@@ -150,6 +150,7 @@ def main():
             product = new_product()
             add_product(product)
             print(f'\n{product['product_name'].title()} added successfully.')
+            sleep(1)
         elif choice.lower() == 'b':
             backup_to_csv()
         else:
