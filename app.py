@@ -1,31 +1,39 @@
 from models import Base, session, Product, engine
 import csv
-from datetime import date, datetime
+from datetime import datetime
 from time import sleep
+
+
+def display_error(msg):
+    print(f'''
+x  x  x  Error  x  x  x
+-----------------------
+{msg} Please try again.
+
+''')
+    sleep(1)
+
 
 def clean_price(price):
     price = price[1:]
     try:
         return int(float(price) * 100)
     except ValueError:
-        msg = f'Invalid price. Try again.'
-        # add function call to print error message
+        display_error('Invalid price.')
 
 
 def clean_quantity(quantity):
     try:
         return int(quantity)
     except ValueError:
-        msg = f'Invalid quantity. Try again.'
-        # add function call to print error message
+        display_error('Quantity must be a number.')
     
 
 def clean_date(updated_date):
     try:
         return datetime.strptime(updated_date, '%m/%d/%Y').date()
     except ValueError:
-        msg = f'Invalid date format. Try again.'
-        # add function call to print error message
+        display_error('Invalid date format (MM/DD/YYYY).')
 
 
 def format_price(price):
@@ -83,8 +91,7 @@ def get_product_by_id():
         if product:
             return product
         else:
-            msg = 'Product not found. Try again.'
-            # add function call to print error message
+            display_error('Product not found.')
 
 
 def new_product():
@@ -96,30 +103,25 @@ def new_product():
             new_product['product_name'] = name
             name_error = False
         else:
-            msg = 'Name must be at least 3 characters.'
-            # add function call to print error message
-
+            display_error('Name must be at least 3 characters.')
     qty_error = True
     while qty_error:
         quantity = clean_quantity(input('>> Quantity:  '))
         if quantity:
             new_product['product_quantity'] = quantity
             qty_error = False
-
     price_error = True
     while price_error:
         price = clean_price('$' + input('>> Price (e.g. 3.99):  $'))
         if price:
             new_product['product_price'] = price
             price_error = False
-
     updated_error = True
     while updated_error:
         updated = clean_date(input(f'>> Date Updated (e.g. 4/10/2025):  '))
         if updated:
             new_product['date_updated'] = updated
             updated_error = False
-    
     return new_product
 
 
@@ -139,17 +141,15 @@ def main():
     while True:
         choice = menu()
         if choice not in ('vab'):
-            msg = 'Invalid selection. Try again'
-            # add function call to print error message
+            display_error('Invalid selection.')
         elif choice.lower() == 'v':
             product = get_product_by_id()
             print(product)
             sleep(1)
         elif choice.lower() == 'a':
             product = new_product()
-            print(product)
             add_product(product)
-            print(f'{product['product_ename'].title()} added successfully.')
+            print(f'{product['product_name'].title()} added successfully.')
         elif choice.lower() == 'b':
             backup_to_csv()
         else:
