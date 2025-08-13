@@ -38,7 +38,7 @@ def clean_date(updated_date):
 
 def format_price(price):
     float_price = (price / 100)
-    return f'{float_price:.2f}'
+    return f'${float_price:.2f}'
 
 
 def format_date(updated_date):
@@ -66,7 +66,7 @@ def backup_to_csv():
             quantity = product.product_quantity
             price = format_price(product.product_price)
             updated = format_date(product.date_updated)
-            writer.writerow([name, quantity, price, updated])
+            writer.writerow([name, price, quantity, updated])
 
 
 def add_product(product):
@@ -145,7 +145,7 @@ def main():
         elif choice.lower() == 'v':
             product = get_product_by_id()
             print(product)
-            sleep(1)
+            sleep(1.5)
         elif choice.lower() == 'a':
             product = new_product()
             add_product(product)
@@ -153,6 +153,8 @@ def main():
             sleep(1)
         elif choice.lower() == 'b':
             backup_to_csv()
+            print(f'\nBackup complete.')
+            sleep(1)
         else:
             break
         
